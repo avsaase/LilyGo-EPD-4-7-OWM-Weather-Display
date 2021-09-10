@@ -491,10 +491,10 @@ void DisplayTempHumiPressSection(int x, int y) {
   DrawPressureAndTrend(x + 195, y + 15, WxConditions[0].Pressure, WxConditions[0].Trend);
   int Yoffset = 42;
   if (WxConditions[0].Windspeed > 0) {
-    drawString(x - 30, y + Yoffset, String(WxConditions[0].FeelsLike, 1) + "° FL", LEFT);   // Show FeelsLike temperature if windspeed > 0
+    drawString(x - 30, y + Yoffset, String(WxConditions[0].FeelsLike, 1) + "° " + TXT_TEMPERATURE_FEELS_LIKE, LEFT);   // Show FeelsLike temperature if windspeed > 0
     Yoffset += 30;
   }
-  drawString(x - 30, y + Yoffset, String(WxConditions[0].High, 0) + "° | " + String(WxConditions[0].Low, 0) + "° Hi/Lo", LEFT); // Show forecast high and Low
+  drawString(x - 30, y + Yoffset, String(WxConditions[0].High, 0) + "° | " + String(WxConditions[0].Low, 0) + "° " + TXT_TEMPERATURE_HILO, LEFT); // Show forecast high and Low
 }
 
 void DisplayForecastTextSection(int x, int y) {
