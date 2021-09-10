@@ -533,7 +533,7 @@ void DisplayVisiCCoverUVISection(int x, int y) {
   }
   Visibility(x + 5, y, String(visibility) + "M");
   CloudCover(x + 165, y, WxConditions[0].Cloudcover);
-  Display_UVIndexLevel(x + 290, y, WxConditions[0].UVI);
+  if (WxConditions[0].Icon.endsWith("d")) Display_UVIndexLevel(x + 290, y, WxConditions[0].UVI);
 }
 
 void Display_UVIndexLevel(int x, int y, float UVI) {
