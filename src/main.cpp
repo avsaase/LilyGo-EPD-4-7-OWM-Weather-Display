@@ -116,6 +116,8 @@ void addrain(int x, int y, int scale, bool IconSize);
 void addsnow(int x, int y, int scale, bool IconSize);
 void addtstorm(int x, int y, int scale);
 void addsun(int x, int y, int scale, bool IconSize);
+void addmoon(int x, int y, int scale, bool IconSize);
+void addSunMoon(int x, int y, int scale, bool IconSize, bool day);
 void addfog(int x, int y, int scale, int linesize, bool IconSize);
 void DrawAngledLine(int x, int y, int x1, int y1, int size, int color);
 void ClearSky(int x, int y, bool IconSize, String IconName);
@@ -129,7 +131,6 @@ void Snow(int x, int y, bool IconSize, String IconName);
 void Mist(int x, int y, bool IconSize, String IconName);
 void CloudCover(int x, int y, int CloudCover);
 void Visibility(int x, int y, String Visibility);
-void addmoon(int x, int y, bool IconSize);
 void Nodata(int x, int y, bool IconSize, String IconName);
 void DrawMoonImage(int x, int y);
 void DrawSunriseImage(int x, int y);
@@ -873,33 +874,33 @@ void DrawAngledLine(int x, int y, int x1, int y1, int size, int color) {
 
 void ClearSky(int x, int y, bool IconSize, String IconName) {
   int scale = Small;
-  if (IconName.endsWith("n")) addmoon(x, y, IconSize);
+  // if (IconName.endsWith("n")) addmoon(x, y, IconSize);
   if (IconSize == LargeIcon) scale = Large;
   y += (IconSize ? 0 : 10);
-  addsun(x, y, scale * (IconSize ? 1.7 : 1.2), IconSize);
+  addSunMoon(x, y, scale * (IconSize ? 1.7 : 1.2), IconSize, IconName.endsWith("d"));
 }
 
 void BrokenClouds(int x, int y, bool IconSize, String IconName) {
   int scale = Small, linesize = 5;
-  if (IconName.endsWith("n")) addmoon(x, y, IconSize);
+  // if (IconName.endsWith("n")) addmoon(x, y, IconSize);
   y += 15;
   if (IconSize == LargeIcon) scale = Large;
-  addsun(x - scale * 1.8, y - scale * 1.8, scale, IconSize);
+  addSunMoon(x - scale * 1.8, y - scale * 1.8, scale, IconSize, IconName.endsWith("d"));
   addcloud(x, y, scale * (IconSize ? 1 : 0.75), linesize);
 }
 
 void FewClouds(int x, int y, bool IconSize, String IconName) {
   int scale = Small, linesize = 5;
-  if (IconName.endsWith("n")) addmoon(x, y, IconSize);
+  // if (IconName.endsWith("n")) addmoon(x, y, IconSize);
   y += 15;
   if (IconSize == LargeIcon) scale = Large;
   addcloud(x + (IconSize ? 10 : 0), y, scale * (IconSize ? 0.9 : 0.8), linesize);
-  addsun((x + (IconSize ? 10 : 0)) - scale * 1.8, y - scale * 1.6, scale, IconSize);
+  addSunMoon((x + (IconSize ? 10 : 0)) - scale * 1.8, y - scale * 1.6, scale, IconSize, IconName.endsWith("d"));
 }
 
 void ScatteredClouds(int x, int y, bool IconSize, String IconName) {
   int scale = Small, linesize = 5;
-  if (IconName.endsWith("n")) addmoon(x, y, IconSize);
+  // if (IconName.endsWith("n")) addmoon(x, y, IconSize);
   y += 15;
   if (IconSize == LargeIcon) scale = Large;
   addcloud(x - (IconSize ? 35 : 0), y * (IconSize ? 0.75 : 0.93), scale / 2, linesize); // Cloud top left
@@ -908,7 +909,7 @@ void ScatteredClouds(int x, int y, bool IconSize, String IconName) {
 
 void Rain(int x, int y, bool IconSize, String IconName) {
   int scale = Small, linesize = 5;
-  if (IconName.endsWith("n")) addmoon(x, y, IconSize);
+  // if (IconName.endsWith("n")) addmoon(x, y, IconSize);
   y += 15;
   if (IconSize == LargeIcon) scale = Large;
   addcloud(x, y, scale * (IconSize ? 1 : 0.75), linesize);
@@ -917,17 +918,17 @@ void Rain(int x, int y, bool IconSize, String IconName) {
 
 void ChanceRain(int x, int y, bool IconSize, String IconName) {
   int scale = Small, linesize = 5;
-  if (IconName.endsWith("n")) addmoon(x, y, IconSize);
+  // if (IconName.endsWith("n")) addmoon(x, y, IconSize);
   if (IconSize == LargeIcon) scale = Large;
   y += 15;
-  addsun(x - scale * 1.8, y - scale * 1.8, scale, IconSize);
+  addSunMoon(x - scale * 1.8, y - scale * 1.8, scale, IconSize, IconName.endsWith("d"));
   addcloud(x, y, scale * (IconSize ? 1 : 0.65), linesize);
   addrain(x, y, scale, IconSize);
 }
 
 void Thunderstorms(int x, int y, bool IconSize, String IconName) {
   int scale = Small, linesize = 5;
-  if (IconName.endsWith("n")) addmoon(x, y, IconSize);
+  // if (IconName.endsWith("n")) addmoon(x, y, IconSize);
   if (IconSize == LargeIcon) scale = Large;
   y += 5;
   addcloud(x, y, scale * (IconSize ? 1 : 0.75), linesize);
@@ -936,7 +937,7 @@ void Thunderstorms(int x, int y, bool IconSize, String IconName) {
 
 void Snow(int x, int y, bool IconSize, String IconName) {
   int scale = Small, linesize = 5;
-  if (IconName.endsWith("n")) addmoon(x, y, IconSize);
+  // if (IconName.endsWith("n")) addmoon(x, y, IconSize);
   if (IconSize == LargeIcon) scale = Large;
   addcloud(x, y, scale * (IconSize ? 1 : 0.75), linesize);
   addsnow(x, y, scale, IconSize);
@@ -944,9 +945,9 @@ void Snow(int x, int y, bool IconSize, String IconName) {
 
 void Mist(int x, int y, bool IconSize, String IconName) {
   int scale = Small, linesize = 5;
-  if (IconName.endsWith("n")) addmoon(x, y, IconSize);
+  // if (IconName.endsWith("n")) addmoon(x, y, IconSize);
   if (IconSize == LargeIcon) scale = Large;
-  addsun(x, y, scale * (IconSize ? 1 : 0.75), linesize);
+  addSunMoon(x, y, scale * (IconSize ? 1 : 0.75), linesize, IconName.endsWith("d"));
   addfog(x, y, scale, linesize, IconSize);
 }
 
@@ -973,15 +974,17 @@ void Visibility(int x, int y, String Visibility) {
   drawString(x + 20, y, Visibility, LEFT);
 }
 
-void addmoon(int x, int y, bool IconSize) {
-  int xOffset = 65;
-  int yOffset = 12;
-  if (IconSize == LargeIcon) {
-    xOffset = 130;
-    yOffset = -40;
+void addmoon(int x, int y, int scale, bool IconSize) {
+  fillCircle(x, y, scale * 1.3, Grey);
+  fillCircle(x + scale * 1.2, y, scale * 1.5, White);
+}
+
+void addSunMoon(int x, int y, int scale, bool IconSize, bool day) {
+  if (day) {
+    addsun(x, y, scale, IconSize);
+  } else {
+    addmoon(x, y, scale, IconSize);
   }
-  fillCircle(x - 28 + xOffset, y - 37 + yOffset, uint16_t(Small * 1.0), Black);
-  fillCircle(x - 16 + xOffset, y - 37 + yOffset, uint16_t(Small * 1.6), White);
 }
 
 void Nodata(int x, int y, bool IconSize, String IconName) {
