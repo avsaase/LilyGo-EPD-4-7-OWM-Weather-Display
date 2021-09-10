@@ -90,7 +90,7 @@ void DisplayWeather();
 void DisplayGeneralInfoSection();
 void DisplayWeatherIcon(int x, int y);
 void DisplayMainWeatherSection(int x, int y);
-void DisplayDisplayWindSection(int x, int y, float angle, float windspeed, int Cradius);
+void DisplayDisplayWindSection(int x, int y, float angle, float windspeed, float windgust, int Cradius);
 String WindDegToOrdinalDirection(float winddirection);
 void DisplayTempHumiPressSection(int x, int y);
 void DisplayForecastTextSection(int x, int y);
@@ -286,6 +286,7 @@ bool DecodeWeather(WiFiClient& json, String Type) {
     WxConditions[0].Visibility  = current["visibility"];                           Serial.println("Visi: " + String(WxConditions[0].Visibility));
     WxConditions[0].Windspeed   = current["wind_speed"];                           Serial.println("WSpd: " + String(WxConditions[0].Windspeed));
     WxConditions[0].Winddir     = current["wind_deg"];                             Serial.println("WDir: " + String(WxConditions[0].Winddir));
+    WxConditions[0].Windgust    = current["wind_gust"];                            Serial.println("WDir: " + String(WxConditions[0].Windgust));
     JsonObject current_weather  = current["weather"][0];
     String Description = current_weather["description"];                           // "scattered clouds"
     String Icon        = current_weather["icon"];                                  // "01n"
@@ -403,7 +404,7 @@ String TitleCase(String text) {
 void DisplayWeather() {                          // 4.7" e-paper display is 960x540 resolution
   DisplayStatusSection(600, 20, wifi_signal);    // Wi-Fi signal strength and Battery voltage
   DisplayGeneralInfoSection();                   // Top line of the display
-  DisplayDisplayWindSection(137, 150, WxConditions[0].Winddir, WxConditions[0].Windspeed, 100);
+  DisplayDisplayWindSection(137, 150, WxConditions[0].Winddir, WxConditions[0].Windspeed, WxConditions[0].Windgust, 100);
   DisplayAstronomySection(5, 252);               // Astronomy section Sun rise/set, Moon phase and Moon icon
   DisplayMainWeatherSection(320, 110);           // Centre section of display for Location, temperature, Weather report, current Wx Symbol
   DisplayWeatherIcon(835, 140);                  // Display weather icon scale = Large;
@@ -429,7 +430,7 @@ void DisplayMainWeatherSection(int x, int y) {
   DisplayVisiCCoverUVISection(x - 10, y + 95);
 }
 
-void DisplayDisplayWindSection(int x, int y, float angle, float windspeed, int Cradius) {
+void DisplayDisplayWindSection(int x, int y, float angle, float windspeed, float windgust, int Cradius) {
   arrow(x, y, Cradius - 22, angle, 18, 33); // Show wind direction on outer circle of width and length
   setFont(OpenSans8B);
   int dxo, dyo, dxi, dyi;
@@ -456,13 +457,13 @@ void DisplayDisplayWindSection(int x, int y, float angle, float windspeed, int C
   drawString(x, y + Cradius + 10,     TXT_S, CENTER);
   drawString(x - Cradius - 15, y - 5, TXT_W, CENTER);
   drawString(x + Cradius + 10, y - 5, TXT_E, CENTER);
-  drawString(x + 3, y + 50, String(angle, 0) + "°", CENTER);
+  drawString(x + 3, y + 50, (Units == "M" ? "m/s" : "mph"), CENTER);
   setFont(OpenSans12B);
   drawString(x, y - 50, WindDegToOrdinalDirection(angle), CENTER);
   setFont(OpenSans24B);
   drawString(x + 3, y - 18, String(windspeed, 1), CENTER);
   setFont(OpenSans12B);
-  drawString(x, y + 25, (Units == "M" ? "m/s" : "mph"), CENTER);
+  drawString(x, y + 25, "(" + String(windgust, 1) + ")", CENTER);
 }
 
 String WindDegToOrdinalDirection(float winddirection) {

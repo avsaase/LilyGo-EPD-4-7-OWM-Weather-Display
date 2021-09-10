@@ -17,6 +17,7 @@ typedef struct { // For current Day and Day 1, 2, 3, etc
   float  Low;
   float  Winddir;
   float  Windspeed;
+  float  Windgust;
   float  Rainfall;
   float  Snowfall;
   float  Pressure;
