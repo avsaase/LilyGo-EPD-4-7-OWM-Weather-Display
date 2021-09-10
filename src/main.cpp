@@ -529,11 +529,12 @@ void DisplayVisiCCoverUVISection(int x, int y) {
 
 void Display_UVIndexLevel(int x, int y, float UVI) {
   String Level = "";
-  if (UVI <= 2)              Level = " (L)";
-  if (UVI >= 3 && UVI <= 5)  Level = " (M)";
-  if (UVI >= 6 && UVI <= 7)  Level = " (H)";
-  if (UVI >= 8 && UVI <= 10) Level = " (VH)";
-  if (UVI >= 11)             Level = " (EX)";
+  int UVIround = roundf(UVI);
+  if (UVIround <= 2)                    Level = " (L)";
+  if (UVIround >= 3 && UVIround <= 5)   Level = " (M)";
+  if (UVIround >= 6 && UVIround <= 7)   Level = " (H)";
+  if (UVIround >= 8 && UVIround <= 10)  Level = " (VH)";
+  if (UVIround >= 11)                   Level = " (EX)";
   drawString(x + 20, y - 5, String(UVI, (UVI < 0 ? 1 : 0)) + Level, LEFT);
   DrawUVI(x - 10, y - 5);
 }
