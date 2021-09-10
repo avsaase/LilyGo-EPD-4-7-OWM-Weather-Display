@@ -551,7 +551,7 @@ void DisplayForecastWeather(int x, int y, int index, int fwidth) {
   DisplayConditionsSection(x + fwidth / 2 - 5, y + 85, WxForecast[index].Icon, SmallIcon);
   setFont(OpenSans10B);
   drawString(x + fwidth / 2, y + 30, String(ConvertUnixTime(WxForecast[index].Dt + WxConditions[0].FTimezone).substring(0, 5)), CENTER);
-  drawString(x + fwidth / 2, y + 130, String(WxForecast[index].High, 0) + "°/" + String(WxForecast[index].Low, 0) + "°", CENTER);
+  drawString(x + fwidth / 2, y + 130, String((WxForecast[index].High + WxForecast[index].Low) / 2, 0) + "°", CENTER);
 }
 
 double NormalizedMoonPhase(int d, int m, int y) {
