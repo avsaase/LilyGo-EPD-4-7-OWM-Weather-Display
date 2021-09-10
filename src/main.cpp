@@ -148,6 +148,7 @@ void fillTriangle(int16_t x0, int16_t y0, int16_t x1, int16_t y1, int16_t x2, in
 void drawPixel(int x, int y, uint8_t color);
 void setFont(GFXfont const & font);
 void edp_update();
+int roundToNearest(int number, int nearest);
 ///////
 
 // This is only to avoid an undefined error from IntelliSense
@@ -522,9 +523,15 @@ void DisplayForecastTextSection(int x, int y) {
 void DisplayVisiCCoverUVISection(int x, int y) {
   setFont(OpenSans12B);
   Serial.print("=========================="); Serial.println(WxConditions[0].Visibility);
-  Visibility(x + 5, y, String(WxConditions[0].Visibility) + "M");
-  CloudCover(x + 155, y, WxConditions[0].Cloudcover);
-  Display_UVIndexLevel(x + 265, y, WxConditions[0].UVI);
+  int visibility = WxConditions[0].Visibility;
+  if (visibility >= 1000) {
+    visibility = roundToNearest(visibility, 100);
+  } else {
+    visibility = roundToNearest(visibility, 10);
+  }
+  Visibility(x + 5, y, String(visibility) + "M");
+  CloudCover(x + 165, y, WxConditions[0].Cloudcover);
+  Display_UVIndexLevel(x + 290, y, WxConditions[0].UVI);
 }
 
 void Display_UVIndexLevel(int x, int y, float UVI) {
@@ -536,7 +543,7 @@ void Display_UVIndexLevel(int x, int y, float UVI) {
   if (UVIround >= 8 && UVIround <= 10)  Level = " (VH)";
   if (UVIround >= 11)                   Level = " (EX)";
   drawString(x + 20, y - 5, String(UVI, (UVI < 0 ? 1 : 0)) + Level, LEFT);
-  DrawUVI(x - 10, y - 5);
+  DrawUVI(x - 5, y - 5);
 }
 
 void DisplayForecastWeather(int x, int y, int index, int fwidth) {
@@ -1139,4 +1146,8 @@ void setFont(GFXfont const & font) {
 
 void edp_update() {
   epd_draw_grayscale_image(epd_full_screen(), framebuffer); // Update the screen
+}
+
+int roundToNearest(int number, int nearest) {
+  return ((number + nearest/2) / nearest) * nearest;
 }
