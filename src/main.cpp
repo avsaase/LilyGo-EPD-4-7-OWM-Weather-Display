@@ -55,7 +55,7 @@ float humidity_readings[max_readings]    = {0};
 float rain_readings[max_readings]        = {0};
 float snow_readings[max_readings]        = {0};
 
-long SleepDuration   = 30; // Sleep time in minutes, aligned to the nearest minute boundary, so if 30 will always update at 00 or 30 past the hour
+long SleepDuration   = 1; // Sleep time in minutes, aligned to the nearest minute boundary, so if 30 will always update at 00 or 30 past the hour
 int  WakeupHour      = 8;  // Wakeup after 07:00 to save battery power
 int  SleepHour       = 23; // Sleep  after 23:00 to save battery power
 long StartTime       = 0;
@@ -491,8 +491,8 @@ void DisplayTempHumiPressSection(int x, int y) {
   setFont(OpenSans12B);
   DrawPressureAndTrend(x + 195, y + 15, WxConditions[0].Pressure, WxConditions[0].Trend);
   int Yoffset = 42;
-  if (WxConditions[0].Windspeed > 0) {
-    drawString(x - 30, y + Yoffset, "(" + String(WxConditions[0].FeelsLike, 1) + "° " + TXT_TEMPERATURE_FEELS_LIKE + ")", LEFT);   // Show FeelsLike temperature if windspeed > 0
+  if (WxConditions[0].FeelsLike < WxConditions[0].Temperature) {
+    drawString(x - 30, y + Yoffset, "(" + String(WxConditions[0].FeelsLike, 1) + "° " + TXT_TEMPERATURE_FEELS_LIKE + ")", LEFT);   // Show FeelsLike temperature if lower than temperature
     Yoffset += 30;
   }
   drawString(x - 30, y + Yoffset, String(WxConditions[0].High, 0) + "° | " + String(WxConditions[0].Low, 0) + "° " + TXT_TEMPERATURE_HILO, LEFT); // Show forecast high and Low
@@ -543,7 +543,7 @@ void Display_UVIndexLevel(int x, int y, float UVI) {
   if (UVIround >= 8 && UVIround <= 10)  Level = " (VH)";
   if (UVIround >= 11)                   Level = " (EX)";
   drawString(x + 20, y - 5, String(UVI, (UVI < 0 ? 1 : 0)) + Level, LEFT);
-  DrawUVI(x - 5, y - 5);
+  DrawUVI(x - 8, y - 5);
 }
 
 void DisplayForecastWeather(int x, int y, int index, int fwidth) {
@@ -551,7 +551,7 @@ void DisplayForecastWeather(int x, int y, int index, int fwidth) {
   DisplayConditionsSection(x + fwidth / 2 - 5, y + 85, WxForecast[index].Icon, SmallIcon);
   setFont(OpenSans10B);
   drawString(x + fwidth / 2, y + 30, String(ConvertUnixTime(WxForecast[index].Dt + WxConditions[0].FTimezone).substring(0, 5)), CENTER);
-  drawString(x + fwidth / 2, y + 130, String((WxForecast[index].High + WxForecast[index].Low) / 2, 0) + "°", CENTER);
+  drawString(x + fwidth / 2, y + 130, String(WxForecast[index].Temperature, 0) + "°", CENTER);
 }
 
 double NormalizedMoonPhase(int d, int m, int y) {
@@ -565,7 +565,7 @@ void DisplayAstronomySection(int x, int y) {
   setFont(OpenSans10B);
   time_t now = time(NULL);
   struct tm * now_utc  = gmtime(&now);
-  drawString(x + 5, y + 102, MoonPhase(now_utc->tm_mday, now_utc->tm_mon + 1, now_utc->tm_year + 1900, Hemisphere), LEFT);
+  // drawString(x + 5, y + 102, MoonPhase(now_utc->tm_mday, now_utc->tm_mon + 1, now_utc->tm_year + 1900, Hemisphere), LEFT);
   DrawMoonImage(x + 10, y + 23); // Different references!
   DrawMoon(x - 28, y - 15, 75, now_utc->tm_mday, now_utc->tm_mon + 1, now_utc->tm_year + 1900, Hemisphere); // Spaced at 1/2 moon size, so 10 - 75/2 = -28
   drawString(x + 115, y + 40, ConvertUnixTime(WxConditions[0].Sunrise).substring(0, 5), LEFT); // Sunrise
@@ -665,9 +665,9 @@ void DisplayGraphSection(int x, int y) {
   DrawGraph(gx + 1 * gap, gy, gwidth, gheight, 10, 30,    Units == "M" ? TXT_TEMPERATURE_C : TXT_TEMPERATURE_F, temperature_readings, max_readings, autoscale_on, barchart_off);
   DrawGraph(gx + 2 * gap, gy, gwidth, gheight, 0, 100,   TXT_HUMIDITY_PERCENT, humidity_readings, max_readings, autoscale_off, barchart_off);
   if (SumOfPrecip(rain_readings, max_readings) >= SumOfPrecip(snow_readings, max_readings))
-    DrawGraph(gx + 3 * gap + 5, gy, gwidth, gheight, 0, 30, Units == "M" ? TXT_RAINFALL_MM : TXT_RAINFALL_IN, rain_readings, max_readings, autoscale_on, barchart_on);
+    DrawGraph(gx + 3 * gap + 5, gy, gwidth, gheight, 0, 10, Units == "M" ? TXT_RAINFALL_MM : TXT_RAINFALL_IN, rain_readings, max_readings, autoscale_off, barchart_on);
   else
-    DrawGraph(gx + 3 * gap + 5, gy, gwidth, gheight, 0, 30, Units == "M" ? TXT_SNOWFALL_MM : TXT_SNOWFALL_IN, snow_readings, max_readings, autoscale_on, barchart_on);
+    DrawGraph(gx + 3 * gap + 5, gy, gwidth, gheight, 0, 30, Units == "M" ? TXT_SNOWFALL_MM : TXT_SNOWFALL_IN, snow_readings, max_readings, autoscale_off, barchart_on);
 }
 
 void DisplayConditionsSection(int x, int y, String IconName, bool IconSize) {
@@ -1073,7 +1073,7 @@ void DrawGraph(int x_pos, int y_pos, int gwidth, int gheight, float Y1Min, float
       if (spacing < y_minor_axis) drawFastHLine((x_pos + 3 + j * gwidth / number_of_dashes), y_pos + (gheight * spacing / y_minor_axis), gwidth / (2 * number_of_dashes), Grey);
     }
     if ((Y1Max - (float)(Y1Max - Y1Min) / y_minor_axis * spacing) < 5 || title == TXT_PRESSURE_IN) {
-      drawString(x_pos - 10, y_pos + gheight * spacing / y_minor_axis - 5, String((Y1Max - (float)(Y1Max - Y1Min) / y_minor_axis * spacing + 0.01), 1), RIGHT);
+      drawString(x_pos - 10, y_pos + gheight * spacing / y_minor_axis - 5, String((Y1Max - (float)(Y1Max - Y1Min) / y_minor_axis * spacing + 0.01), 0), RIGHT);
     }
     else
     {
